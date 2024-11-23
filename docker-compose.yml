@@ -1,0 +1,36 @@
+services:
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    networks:
+      - spring-boot-app-network
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - dbvol:/var/lib/mysql
+    ports:
+      - 3307:3306
+    restart: always
+  spring-boot-app:
+    build: .
+    container_name: spring-boot-app
+    ports:
+      - 7777:8080
+    restart: always
+    networks:
+      - spring-boot-app-network
+    depends_on:
+      - mysqldb
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      MYSQL_DB_NAME: test
+      MYSQL_SERVER_PORT: 3306
+networks:
+  spring-boot-app-network:
+    name: spring-boot-app-network
+
+volumes:
+  dbvol:
